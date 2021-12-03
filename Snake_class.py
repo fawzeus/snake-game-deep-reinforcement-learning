@@ -1,6 +1,8 @@
 import pygame
 import time
 import sys
+import numpy as np
+from Food_Class import Food
 
 frame_size_x = 720
 frame_size_y = 480
@@ -17,7 +19,7 @@ class Snake:
         self.snake_body = [[100, 50], [100-10, 50], [100-(2*10), 50]]
         self.direction = "RIGHT"
         self.next_move = self.direction
-        self. score = 0
+        self.score = 0
 
     def game_over(self,game_window):
         my_font = pygame.font.SysFont('times new roman', 90)
@@ -40,6 +42,31 @@ class Snake:
         else:
             score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
         game_window.blit(score_surface, score_rect)
+    def move(self,action=None):
+        if action :
+            moves = ["RIGHT","DOWN","LEFT","UP"]
+            idx = moves.index(self.direction)
+            if np.array_equal(action,[1,0,0]):
+                nex_dir = moves[idx]
+            elif np.array_equal(action,[0,1,0]):
+                idx+=1
+                idx%=4
+                nex_dir = moves[idx]
+            else :
+                idx-=1
+                if idx < 0:
+                    idx = 3
+                nex_dir = moves[idx]
+            self.direction = nex_dir
+            
+        if self.direction == 'UP':
+            self.move_up()
+        if self.direction == 'DOWN':
+            self.move_down()
+        if self.direction == 'LEFT':
+            self.move_left()
+        if self.direction == 'RIGHT':
+            self.move_right()
     def move_up(self):
         self.snake_pos[1] -= 10
     def move_down(self):
@@ -71,6 +98,18 @@ class Snake:
         for block in self.snake_body[1:]:
             if self.snake_pos[0] == block[0] and self.snake_pos[1] == block[1]:
                 self.game_over(game_window)
+    def check_for_collision(self,pt=None):
+        if pt is None:
+            pt =self.snake_pos
+        if pt[0] < 0 or pt[0] > frame_size_x-10:
+            return True
+        if pt[1] < 0 or pt[1] > frame_size_y-10:
+            return True
+        # Touching the snake body
+        for block in self.snake_body[1:]:
+            if pt[0] == block[0] and pt[1] == block[1]:
+                return True
+        return False
     def set_next_move(self,move):
         self.next_move=move
     def display(self,game_window):
