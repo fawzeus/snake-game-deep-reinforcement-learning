@@ -12,15 +12,18 @@ class Game:
     green = pygame.Color(0, 255, 0)
     blue = pygame.Color(0, 0, 255)
 
-    def __init__(self) -> None:
+    def __init__(self,difficulty) -> None:
         self.snake = Snake()
         self.food = Food()
-        self.difficulty = 25
+        self.difficulty = difficulty
         self.frame_size_x = 720
         self.frame_size_y = 480
         self.game_window = pygame.display.set_mode((self.frame_size_x, self.frame_size_y))
         self.fps_controller = pygame.time.Clock()
         self.iteration =0
+    def restart(self):
+        diff = self.difficulty
+        self.__init__(diff)
     def play(self):
         pygame.init()
         while True:
@@ -83,7 +86,7 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
         reward = 0
-        self.snake.set_next_move(action)
+        self.snake.move(action)
         self.snake.set_direction()
         self.snake.move()
         self.snake.snake_add()
