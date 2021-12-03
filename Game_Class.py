@@ -92,7 +92,7 @@ class Game:
         # Spawning food on the screen
         if self.food.food_not_spawn():
             self.food.update()
-            print(reward)
+            #print(reward)
             reward = 10
         self.food.spawn()
         collision = self.snake.check_for_collision()
@@ -113,11 +113,8 @@ class Game:
         self.iteration+=1
         if collision or self.iteration > 100 * len (self.snake.snake_body):
             reward = -10
-            print(reward)
             return reward,True,self.snake.score
         else :
-            if reward >0:
-                print(reward)
             return reward ,False,self.snake.score
     def ai_play(self):
         pygame.init()
