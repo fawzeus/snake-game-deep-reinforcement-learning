@@ -11,9 +11,10 @@ from Plotter import plot
 pygame.init()
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LEARNING_RATE = 0.05
+LEARNING_RATE = 0.001
+BLOCK_SIZE = 20
 
-DIFFICULTY = 120
+DIFFICULTY = 60
 
 class Player :
     def __init__(self) -> None:
@@ -21,16 +22,16 @@ class Player :
         self.epsilon = 0
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = Linear_Qnet(11,256,3)
+        self.model = Linear_Qnet(11,512,3)
         self.trainer = Q_trainer(model=self.model,learning_rate=LEARNING_RATE,gamma=self.gamma)
 
         
     def get_state(self,game):
         head = game.snake.snake_pos
-        point_l =[head[0] - 20, head[1]]
-        point_r = [head[0] + 20, head[1]]
-        point_u = [head[0], head[1] - 20]
-        point_d = [head[0], head[1] + 20]
+        point_l =[head[0] - BLOCK_SIZE, head[1]]
+        point_r = [head[0] + BLOCK_SIZE, head[1]]
+        point_u = [head[0], head[1] - BLOCK_SIZE]
+        point_d = [head[0], head[1] + BLOCK_SIZE]
 
         dir_l = game.snake.direction == "LEFT"
         dir_r = game.snake.direction == "RIGHT"

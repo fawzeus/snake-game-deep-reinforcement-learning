@@ -2,10 +2,10 @@ import pygame
 import time
 import sys
 import numpy as np
-from Food_Class import Food
+from pygame.event import set_blocked
 
-frame_size_x = 720
-frame_size_y = 480
+
+BLOCK_SIZE = 20
 
 class Snake:
     black = pygame.Color(0, 0, 0)
@@ -13,19 +13,23 @@ class Snake:
     red = pygame.Color(255, 0, 0)
     green = pygame.Color(0, 255, 0)
     blue = pygame.Color(0, 0, 255)
-    def __init__(self) -> None:
-
-        self.snake_pos = [100,50]
-        self.snake_body = [[100, 50], [100-10, 50], [100-(2*10), 50]]
+    def __init__(self,w=640,h=480) -> None:
+        self.h =h
+        self.w = w
+        self.snake_pos = [self.w//2,self.h//2]
+        self.snake_body = [[self.w//2, self.h//2], [self.w//2-BLOCK_SIZE, self.h//2], [self.w//2-(2*BLOCK_SIZE), self.h//2]]
+        self.snake_pos = [self.w/2, self.h/2]
+        self.snake = [self.snake_pos,
+                      [self.snake_pos[0]-BLOCK_SIZE, self.snake_pos[1]],
+                      [self.snake_pos[0]-(2*BLOCK_SIZE), self.snake_pos[1]]]
         self.direction = "RIGHT"
         self.next_move = self.direction
         self.score = 0
-
     def game_over(self,game_window):
         my_font = pygame.font.SysFont('times new roman', 90)
         game_over_surface = my_font.render('YOU DIED', True, self.red)
         game_over_rect = game_over_surface.get_rect()
-        game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
+        game_over_rect.midtop = (self.w/2, self.h/4)
         game_window.fill(self.black)
         game_window.blit(game_over_surface, game_over_rect)
         self.show_score(0, self.red, 'times', 20,game_window)
@@ -38,9 +42,9 @@ class Snake:
         score_surface = score_font.render('Score : ' + str(self.score), True, color)
         score_rect = score_surface.get_rect()
         if choice == 1:
-            score_rect.midtop = (frame_size_x/10, 15)
+            score_rect.midtop = (self.w/10, 15)
         else:
-            score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
+            score_rect.midtop = (self.w/2, self.h/1.25)
         game_window.blit(score_surface, score_rect)
     def move(self,action=None):
         if action :
@@ -57,8 +61,8 @@ class Snake:
                 if idx < 0:
                     idx = 3
                 nex_dir = moves[idx]
-            self.direction = nex_dir
-            
+            self.next_move = nex_dir
+        self.set_direction()
         if self.direction == 'UP':
             self.move_up()
         if self.direction == 'DOWN':
@@ -68,13 +72,13 @@ class Snake:
         if self.direction == 'RIGHT':
             self.move_right()
     def move_up(self):
-        self.snake_pos[1] -= 10
+        self.snake_pos[1] -= BLOCK_SIZE
     def move_down(self):
-        self.snake_pos[1] += 10
+        self.snake_pos[1] += BLOCK_SIZE
     def move_right(self):
-        self.snake_pos[0] += 10
+        self.snake_pos[0] += BLOCK_SIZE
     def move_left(self):
-        self.snake_pos[0] -= 10
+        self.snake_pos[0] -= BLOCK_SIZE
     def set_direction(self):
         # Making sure the snake cannot move in the opposite snake.direction instantaneously
         if self.next_move == 'UP' and self.direction != 'DOWN':
@@ -90,9 +94,9 @@ class Snake:
     def y(self):
         return self.pos[1]
     def check_for_gameover(self,game_window):
-        if self.snake_pos[0] < 0 or self.snake_pos[0] > frame_size_x-10:
+        if self.snake_pos[0] < 0 or self.snake_pos[0] > self.w-BLOCK_SIZE:
             self.game_over(game_window)
-        if self.snake_pos[1] < 0 or self.snake_pos[1] > frame_size_y-10:
+        if self.snake_pos[1] < 0 or self.snake_pos[1] > self.h-BLOCK_SIZE:
             self.game_over(game_window)
         # Touching the snake body
         for block in self.snake_body[1:]:
@@ -101,9 +105,9 @@ class Snake:
     def check_for_collision(self,pt=None):
         if pt is None:
             pt =self.snake_pos
-        if pt[0] < 0 or pt[0] > frame_size_x-10:
+        if pt[0] < 0 or pt[0] > self.w-BLOCK_SIZE:
             return True
-        if pt[1] < 0 or pt[1] > frame_size_y-10:
+        if pt[1] < 0 or pt[1] > self.h-BLOCK_SIZE:
             return True
         # Touching the snake body
         for block in self.snake_body[1:]:
@@ -113,11 +117,14 @@ class Snake:
     def set_next_move(self,move):
         self.next_move=move
     def display(self,game_window):
-        for pos in self.snake_body:
+        #print("display")
+        #print(self.snake_body)
+        pygame.draw.rect(game_window, self.green, pygame.Rect(self.snake_pos[0], self.snake_pos[1], BLOCK_SIZE, BLOCK_SIZE))
+        for pos in self.snake_body[1:]:
             # Snake body
             # .draw.rect(play_surface, color, xy-coordinate)
             # xy-coordinate -> .Rect(x, y, size_x, size_y)
-            pygame.draw.rect(game_window, self.blue, pygame.Rect(pos[0], pos[1], 10, 10))
+            pygame.draw.rect(game_window, self.blue, pygame.Rect(pos[0], pos[1], BLOCK_SIZE, BLOCK_SIZE))
     def snake_add(self):
         self.snake_body.insert(0, list(self.snake_pos))
     def snake_remove(self):

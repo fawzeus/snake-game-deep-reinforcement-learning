@@ -1,7 +1,7 @@
 import random
 import pygame
-frame_size_x = 720
-frame_size_y = 480
+
+BLOCK_SIZE = 20
 
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
@@ -10,11 +10,11 @@ green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 
 class Food :
-    def __init__(self) -> None:
+    def __init__(self,w=640,h=480) -> None:
         self.food_spawn=True
-        self.food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
-        while self.food_pos in [[100, 50], [100-10, 50], [100-(2*10), 50]]:
-            self.food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
+        self.w=w
+        self.h=h
+        self.food_pos = [random.randrange(1, ((self.w-BLOCK_SIZE)//BLOCK_SIZE)) * BLOCK_SIZE, random.randrange(1, ((self.h-BLOCK_SIZE)//BLOCK_SIZE)) * BLOCK_SIZE]
     def food_not_spawn(self):
         return not self.food_spawn
     def x(self):
@@ -26,6 +26,6 @@ class Food :
     def not_spawn(self):
         self.food_spawn=False
     def update(self):
-        self.food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
+        self.food_pos = [random.randrange(1, ((self.w-BLOCK_SIZE)//BLOCK_SIZE)) * BLOCK_SIZE, random.randrange(1, ((self.h-BLOCK_SIZE)//BLOCK_SIZE)) * BLOCK_SIZE]
     def display(self,game_window):
-        pygame.draw.rect(game_window, red, pygame.Rect(self.food_pos[0], self.food_pos[1], 10, 10))
+        pygame.draw.rect(game_window, red, pygame.Rect(self.food_pos[0], self.food_pos[1], BLOCK_SIZE, BLOCK_SIZE))

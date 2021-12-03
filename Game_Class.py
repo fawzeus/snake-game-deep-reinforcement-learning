@@ -12,12 +12,12 @@ class Game:
     green = pygame.Color(0, 255, 0)
     blue = pygame.Color(0, 0, 255)
 
-    def __init__(self,difficulty) -> None:
+    def __init__(self,difficulty,w=640,h=480) -> None:
         self.snake = Snake()
         self.food = Food()
         self.difficulty = difficulty
-        self.frame_size_x = 720
-        self.frame_size_y = 480
+        self.frame_size_x = w
+        self.frame_size_y = h
         self.game_window = pygame.display.set_mode((self.frame_size_x, self.frame_size_y))
         self.fps_controller = pygame.time.Clock()
         self.iteration =0
@@ -87,20 +87,19 @@ class Game:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
         reward = 0
         self.snake.move(action)
-        self.snake.set_direction()
-        self.snake.move()
         self.snake.snake_add()
         self.snake.eat_food(self.food)
         # Spawning food on the screen
         if self.food.food_not_spawn():
             self.food.update()
+            print(reward)
             reward = 10
         self.food.spawn()
         collision = self.snake.check_for_collision()
         self.game_window.fill(self.black)
         self.snake.display(self.game_window)
 
-        # self.Snake food
+        # display food
         self.food.display(self.game_window)
 
          # Game Over conditions
@@ -114,8 +113,11 @@ class Game:
         self.iteration+=1
         if collision or self.iteration > 100 * len (self.snake.snake_body):
             reward = -10
+            print(reward)
             return reward,True,self.snake.score
         else :
+            if reward >0:
+                print(reward)
             return reward ,False,self.snake.score
     def ai_play(self):
         pygame.init()
@@ -138,7 +140,8 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         pygame.event.post(pygame.event.Event(pygame.QUIT))
             reward,gameover,score = self.play_step(key)
-            print(reward)
+            #print(self.snake.snake_body)
+            #print(reward)
             if gameover :
-                self.__init__()
+                self.__init__(25)
         
