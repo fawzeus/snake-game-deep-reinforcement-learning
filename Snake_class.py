@@ -13,6 +13,7 @@ class Snake:
     red = pygame.Color(255, 0, 0)
     green = pygame.Color(0, 255, 0)
     blue = pygame.Color(0, 0, 255)
+    grey = pygame.Color(149,149,149)
     def __init__(self,w=640,h=480) -> None:
         self.h =h
         self.w = w
@@ -25,6 +26,28 @@ class Snake:
         self.direction = "RIGHT"
         self.next_move = self.direction
         self.score = 0
+    def draw_eyes(self,x,y,game_window):
+        if self.direction == "LEFT":
+            pygame.draw.circle(game_window,self.white,(x+2*BLOCK_SIZE/5,y+BLOCK_SIZE/8),BLOCK_SIZE/6)
+            pygame.draw.circle(game_window,self.black,(x+2*BLOCK_SIZE/5,y+BLOCK_SIZE/8),BLOCK_SIZE/20)
+            pygame.draw.circle(game_window,self.white,(x+2*BLOCK_SIZE/5,y-BLOCK_SIZE/8),BLOCK_SIZE/6)
+            pygame.draw.circle(game_window,self.black,(x+2*BLOCK_SIZE/5,y-BLOCK_SIZE/8),BLOCK_SIZE/20)
+        elif self.direction == "RIGHT":
+            pygame.draw.circle(game_window,self.white,(x-2*BLOCK_SIZE/5,y+BLOCK_SIZE/8),BLOCK_SIZE/6)
+            pygame.draw.circle(game_window,self.black,(x-2*BLOCK_SIZE/5,y+BLOCK_SIZE/8),BLOCK_SIZE/20)
+            pygame.draw.circle(game_window,self.white,(x-2*BLOCK_SIZE/5,y-BLOCK_SIZE/8),BLOCK_SIZE/6)
+            pygame.draw.circle(game_window,self.black,(x-2*BLOCK_SIZE/5,y-BLOCK_SIZE/8),BLOCK_SIZE/20)
+        elif self.direction == "UP":
+            pygame.draw.circle(game_window,self.white,(x+BLOCK_SIZE/8,y+2*BLOCK_SIZE/5),BLOCK_SIZE/6)
+            pygame.draw.circle(game_window,self.black,(x+BLOCK_SIZE/8,y+2*BLOCK_SIZE/5),BLOCK_SIZE/20)
+            pygame.draw.circle(game_window,self.white,(x-BLOCK_SIZE/8,y+2*BLOCK_SIZE/5),BLOCK_SIZE/6)
+            pygame.draw.circle(game_window,self.black,(x-BLOCK_SIZE/8,y+2*BLOCK_SIZE/5),BLOCK_SIZE/20)
+        else:
+            pygame.draw.circle(game_window,self.white,(x+BLOCK_SIZE/8,y-2*BLOCK_SIZE/5),BLOCK_SIZE/6)
+            pygame.draw.circle(game_window,self.black,(x+BLOCK_SIZE/8,y-2*BLOCK_SIZE/5),BLOCK_SIZE/20)
+            pygame.draw.circle(game_window,self.white,(x-BLOCK_SIZE/8,y-2*BLOCK_SIZE/5),BLOCK_SIZE/6)
+            pygame.draw.circle(game_window,self.black,(x-BLOCK_SIZE/8,y-2*BLOCK_SIZE/5),BLOCK_SIZE/20)
+
     def game_over(self,game_window):
         my_font = pygame.font.SysFont('times new roman', 90)
         game_over_surface = my_font.render('YOU DIED', True, self.red)
@@ -119,14 +142,66 @@ class Snake:
     def display(self,game_window):
         #print("display")
         #print(self.snake_body)
-        pygame.draw.rect(game_window, self.green, pygame.Rect(self.snake_pos[0], self.snake_pos[1], BLOCK_SIZE, BLOCK_SIZE))
+        #pygame.draw.rect(game_window, self.green, pygame.Rect(self.snake_pos[0], self.snake_pos[1], BLOCK_SIZE, BLOCK_SIZE))
+        x = self.snake_pos[0]+BLOCK_SIZE//2 
+        y = self.snake_pos[1]+BLOCK_SIZE//2
+        pygame.draw.circle(game_window,self.green,(x,y),BLOCK_SIZE/2)
+        self.draw_eyes(x,y,game_window)
         for pos in self.snake_body[1:]:
             # Snake body
             # .draw.rect(play_surface, color, xy-coordinate)
             # xy-coordinate -> .Rect(x, y, size_x, size_y)
-            pygame.draw.rect(game_window, self.blue, pygame.Rect(pos[0], pos[1], BLOCK_SIZE, BLOCK_SIZE))
+            x = pos[0]+BLOCK_SIZE//2 
+            y = pos[1]+BLOCK_SIZE//2
+            pygame.draw.circle(game_window,self.green,(x,y),BLOCK_SIZE/2)
+            #pygame.draw.rect(game_window, self.blue, pygame.Rect(pos[0], pos[1], BLOCK_SIZE, BLOCK_SIZE))
     def snake_add(self):
         self.snake_body.insert(0, list(self.snake_pos))
+
+    def block_left(self):
+        if self.direction == "RIGHT" :
+            for point in self.snake_body[1:]:
+                if self.snake_pos[0] == point[0] and self.snake_pos[1] > point[1]:
+                    return True
+            return False
+        elif self.direction =="LEFT" :
+            for point in self.snake_body[1:]:
+                if self.snake_pos[0] == point[0] and self.snake_pos[1] < point[1] :
+                    return True
+            return False
+        elif self.direction == "UP":
+            for point in self.snake_body[1:]:
+                if self.snake_pos[1] == point[1] and self.snake_pos[0] > point[0]:
+                    return True
+            return False
+        elif self.direction == "DOWN" :
+            for point in self.snake_body[1:]:
+                if self.snake_pos[1] == point[1] and self.snake_pos[0] < point[0]:
+                    return True
+            return False
+        return False
+    def block_right(self):
+        if self.direction == "RIGHT" :
+            for point in self.snake_body[1:]:
+                if self.snake_pos[0] == point[0] and self.snake_pos[1] < point[1]:
+                    return True
+            return False
+        elif self.direction =="LEFT" :
+            for point in self.snake_body[1:]:
+                if self.snake_pos[0] == point[0] and self.snake_pos[1] > point[1] :
+                    return True
+            return False
+        elif self.direction == "UP":
+            for point in self.snake_body[1:]:
+                if self.snake_pos[1] == point[1] and self.snake_pos[0] < point[0]:
+                    return True
+            return False
+        elif self.direction == "DOWN" :
+            for point in self.snake_body[1:]:
+                if self.snake_pos[1] == point[1] and self.snake_pos[0] > point[0]:
+                    return True
+            return False
+        return False
     def snake_remove(self):
         self.snake_body.pop()
     def eat_food(self,food):

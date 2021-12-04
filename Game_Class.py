@@ -4,8 +4,10 @@ from pygame.constants import KEYDOWN
 
 from Snake_class import Snake
 from Food_Class import Food
+pygame.init()
 
 class Game:
+    score_font = pygame.font.SysFont('consolas', 20)
     black = pygame.Color(0, 0, 0)
     white = pygame.Color(255, 255, 255)
     red = pygame.Color(255, 0, 0)
@@ -21,10 +23,13 @@ class Game:
         self.game_window = pygame.display.set_mode((self.frame_size_x, self.frame_size_y))
         self.fps_controller = pygame.time.Clock()
         self.iteration =0
+        self.score_surface = None
+        self.score_rect = None
     def restart(self):
         diff = self.difficulty
         self.__init__(diff)
     def play(self):
+        i = 0
         pygame.init()
         while True:
             for event in pygame.event.get():
@@ -45,12 +50,10 @@ class Game:
                     # Esc -> Create event to quit the game
                     if event.key == pygame.K_ESCAPE:
                         pygame.event.post(pygame.event.Event(pygame.QUIT))
-
             self.snake.set_direction()
 
             # Moving the self.snake
             self.snake.move()
-
             # self.Snake body growing mechanism
             self.snake.snake_add()
             self.snake.eat_food(self.food)
@@ -58,7 +61,6 @@ class Game:
             if self.food.food_not_spawn():
                 self.food.update()
             self.food.spawn()
-
             # GFX
             self.game_window.fill(self.black)
             self.snake.display(self.game_window)
@@ -76,7 +78,7 @@ class Game:
             # Refresh rate
             self.fps_controller.tick(self.difficulty)
         
-    def play_step(self,action):
+    def play_step(self,action,generation=0):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -106,12 +108,16 @@ class Game:
         # Getting out of bounds
 
         self.snake.show_score(1, self.white, 'consolas', 20,self.game_window)
+        self.score_surface = self.score_font.render('Generation : ' + str(generation+1), True, self.white)
+        self.score_rect = self.score_surface.get_rect()
+        self.score_rect.midtop = (640/10+ 170, 15)
+        self.game_window.blit(self.score_surface,self.score_rect)
         # Refresh game screen
         pygame.display.update()
         # Refresh rate
         self.fps_controller.tick(self.difficulty)
         self.iteration+=1
-        if collision or self.iteration > 100 * len (self.snake.snake_body):
+        if collision or self.iteration > 100 * (self.snake.score +3):
             reward = -10
             return reward,True,self.snake.score
         else :

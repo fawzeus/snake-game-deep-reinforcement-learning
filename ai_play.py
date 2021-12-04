@@ -3,18 +3,22 @@ import random
 import numpy as np
 import pygame
 import torch
+import pickle
+
 
 from collections import deque
 from Game_Class import Game
 from Models import Linear_Qnet,Q_trainer
 from Plotter import plot
+
+white = pygame.Color(255, 255, 255)
 pygame.init()
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
 BLOCK_SIZE = 20
 
-DIFFICULTY = 60
+DIFFICULTY = 10
 
 class Player :
     def __init__(self) -> None:
@@ -22,7 +26,7 @@ class Player :
         self.epsilon = 0
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = Linear_Qnet(11,512,3)
+        self.model = Linear_Qnet(11,256,3)
         self.trainer = Q_trainer(model=self.model,learning_rate=LEARNING_RATE,gamma=self.gamma)
 
         
@@ -57,6 +61,11 @@ class Player :
             (dir_u and game.snake.check_for_collision(point_l)) or 
             (dir_r and game.snake.check_for_collision(point_u)) or 
             (dir_l and game.snake.check_for_collision(point_d)),
+
+            # block left
+            #game.snake.block_left(),
+            #block right
+            #game.snake.block_right(),
             
             # Move direction
             dir_l,
@@ -103,11 +112,13 @@ def train():
     best_score = 0
     player =Player()
     game =Game(DIFFICULTY)
+    with open('data/max_score', 'rb') as score_file : 
+        saved_score = pickle.load(score_file) 
     while True:
         old_state = player.get_state(game)
         final_move = player.get_action(old_state)
         #print(final_move)
-        reward, done ,score =game.play_step(action=final_move)
+        reward, done ,score =game.play_step(action=final_move,generation=player.number_of_games)
         new_state = player.get_state(game)
 
         player.train_short_memory(old_state,final_move,reward,new_state,done)
@@ -120,9 +131,13 @@ def train():
 
             if score > best_score:
                 best_score = score
-                player.model.save()
+                if best_score > saved_score:
+                    with open('data/max_score', 'wb') as score_file :
+                        pickle.dump(best_score,score_file)
+                    player.model.save()
+
             
-            print("Game :",player.number_of_games,"score :",score,"best score :",best_score)
+            print("Game :",player.number_of_games,"score :",score,"best score :",best_score,"saved score :",saved_score)
             plot_scores.append(score)
             total_score+=score
             avg_scores=total_score/player.number_of_games
