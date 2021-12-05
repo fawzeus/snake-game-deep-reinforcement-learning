@@ -1,6 +1,4 @@
-import pygame, sys, time, random
-
-from pygame.constants import KEYDOWN
+import pygame, sys
 
 from Snake_class import Snake
 from Food_Class import Food

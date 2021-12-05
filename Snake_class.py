@@ -2,7 +2,6 @@ import pygame
 import time
 import sys
 import numpy as np
-from pygame.event import set_blocked
 
 
 BLOCK_SIZE = 20
@@ -150,7 +149,6 @@ class Snake:
         for pos in self.snake_body[1:]:
             # Snake body
             # .draw.rect(play_surface, color, xy-coordinate)
-            # xy-coordinate -> .Rect(x, y, size_x, size_y)
             x = pos[0]+BLOCK_SIZE//2 
             y = pos[1]+BLOCK_SIZE//2
             pygame.draw.circle(game_window,self.green,(x,y),BLOCK_SIZE/2)

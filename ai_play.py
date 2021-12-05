@@ -9,7 +9,6 @@ import pickle
 from collections import deque
 from Game_Class import Game
 from Models import Linear_Qnet,Q_trainer
-from Plotter import plot
 
 white = pygame.Color(255, 255, 255)
 pygame.init()
@@ -104,11 +103,7 @@ class Player :
             action[next_move]=1
         return action
 
-def train():
-    #plot_scores =[]
-    #plot_avg_scores = []
-    #avg_scores = 0
-    #total_score =0
+def play():
     best_score = 0
     player =Player()
     game =Game(DIFFICULTY)
@@ -138,11 +133,6 @@ def train():
 
             
             print("Gen: :",player.number_of_games,"|score : ",score,"|best score :",best_score)
-            #plot_scores.append(score)
-            #total_score+=score
-            #avg_scores=total_score/player.number_of_games
-            #plot_avg_scores.append(avg_scores)
-            #plot(plot_scores,plot_avg_scores)
 
 if __name__ == "__main__":
-    train()
+    play()
