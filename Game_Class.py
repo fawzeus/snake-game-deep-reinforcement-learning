@@ -108,16 +108,16 @@ class Game:
         # Getting out of bounds
 
         self.snake.show_score(1, self.white, 'consolas', 20,self.game_window)
-        self.score_surface = self.score_font.render('Generation : ' + str(generation+1), True, self.white)
+        self.score_surface = self.score_font.render('Generation : ' + str(generation), True, self.white)
         self.score_rect = self.score_surface.get_rect()
-        self.score_rect.midtop = (640/10+ 170, 15)
+        self.score_rect.midtop = (640/10+ 180, 15)
         self.game_window.blit(self.score_surface,self.score_rect)
         # Refresh game screen
         pygame.display.update()
         # Refresh rate
         self.fps_controller.tick(self.difficulty)
         self.iteration+=1
-        if collision or self.iteration > 100 * (self.snake.score +3):
+        if collision or self.iteration > 100 * (self.snake.score +1):
             reward = -10
             return reward,True,self.snake.score
         else :

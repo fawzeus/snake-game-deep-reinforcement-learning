@@ -18,7 +18,7 @@ BATCH_SIZE = 1000
 LEARNING_RATE = 0.001
 BLOCK_SIZE = 20
 
-DIFFICULTY = 10
+DIFFICULTY = 30
 
 class Player :
     def __init__(self) -> None:
@@ -26,7 +26,7 @@ class Player :
         self.epsilon = 0
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = Linear_Qnet(11,256,3)
+        self.model = Linear_Qnet(13,256,3)
         self.trainer = Q_trainer(model=self.model,learning_rate=LEARNING_RATE,gamma=self.gamma)
 
         
@@ -63,9 +63,9 @@ class Player :
             (dir_l and game.snake.check_for_collision(point_d)),
 
             # block left
-            #game.snake.block_left(),
+            game.snake.block_left(),
             #block right
-            #game.snake.block_right(),
+            game.snake.block_right(),
             
             # Move direction
             dir_l,
@@ -105,10 +105,10 @@ class Player :
         return action
 
 def train():
-    plot_scores =[]
-    plot_avg_scores = []
-    avg_scores = 0
-    total_score =0
+    #plot_scores =[]
+    #plot_avg_scores = []
+    #avg_scores = 0
+    #total_score =0
     best_score = 0
     player =Player()
     game =Game(DIFFICULTY)
@@ -137,12 +137,12 @@ def train():
                     player.model.save()
 
             
-            print("Game :",player.number_of_games,"score :",score,"best score :",best_score,"saved score :",saved_score)
-            plot_scores.append(score)
-            total_score+=score
-            avg_scores=total_score/player.number_of_games
-            plot_avg_scores.append(avg_scores)
-            plot(plot_scores,plot_avg_scores)
+            print("Gen: :",player.number_of_games,"|score : ",score,"|best score :",best_score)
+            #plot_scores.append(score)
+            #total_score+=score
+            #avg_scores=total_score/player.number_of_games
+            #plot_avg_scores.append(avg_scores)
+            #plot(plot_scores,plot_avg_scores)
 
 if __name__ == "__main__":
     train()
